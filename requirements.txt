@@ -1,5 +1,5 @@
 fastapi
 uvicorn
 python-dotenv
-pipecat-ai[webrtc,deepgram]
+pipecat-ai[webrtc,deepgram,google,openai]
 pipecat-ai-small-webrtc-prebuilt
