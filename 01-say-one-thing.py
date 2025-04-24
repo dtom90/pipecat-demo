@@ -13,7 +13,8 @@ from pipecat.frames.frames import EndFrame, TTSSpeakFrame
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineTask
-from pipecat.services.cartesia.tts import CartesiaTTSService
+from pipecat.services.elevenlabs.tts import ElevenLabsTTSService
+from pipecat.services.elevenlabs.stt import ElevenLabsSTTService
 from pipecat.transports.base_transport import TransportParams
 from pipecat.transports.network.small_webrtc import SmallWebRTCTransport
 from pipecat.transports.network.webrtc_connection import SmallWebRTCConnection
@@ -35,9 +36,23 @@ async def run_bot(webrtc_connection: SmallWebRTCConnection):
         ),
     )
 
-    tts = CartesiaTTSService(
-        api_key=os.getenv("CARTESIA_API_KEY"),
-        voice_id=os.getenv("CARTESIA_VOICE_ID"),
+    tts = ElevenLabsTTSService(
+        api_key=os.getenv("ELEVENLABS_API_KEY"),
+        #
+        # English
+        #
+        voice_id="pqHfZKP75CvOlQylNhV4", # Bill
+        #
+        # Spanish
+        #
+        # model="eleven_multilingual_v2",
+        # voice_id="gD1IexrzCvsXPHUuT0s3",
+    )
+
+    stt = ElevenLabsSTTService(
+        api_key=os.getenv("ELEVENLABS_API_KEY"),
+        model="eleven_multilingual_v2",
+        voice_id="gD1IexrzCvsXPHUuT0s3",
     )
 
     task = PipelineTask(Pipeline([tts, transport.output()]))
