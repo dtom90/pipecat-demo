@@ -1,0 +1,19 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/node_modules": true, // Exclude node_modules from explorer & search
+        "**/.venv": true,        // Exclude Python virtual envs
+        "**/__pycache__": true
+    },
+    "search.exclude": {
+        // inherits patterns from files.exclude by default
+        "**/bower_components": true, // Example: Exclude only from search
+        "**/dist": true,           // Example: Exclude build output only from search
+        "**/logs": true            // Example: Exclude log files only from search
+    }
+}
