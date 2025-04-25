@@ -5,12 +5,11 @@
 #
 
 import os
-import asyncio
 
 from dotenv import load_dotenv
 from loguru import logger
 
-from pipecat.frames.frames import EndFrame, TTSSpeakFrame
+from pipecat.frames.frames import TTSSpeakFrame
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineTask
