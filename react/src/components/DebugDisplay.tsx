@@ -8,10 +8,12 @@ import {
 } from '@pipecat-ai/client-js';
 import { useRTVIClient, useRTVIClientEvent } from '@pipecat-ai/client-react';
 import './DebugDisplay.css';
+import { useState } from 'react';
 
 export function DebugDisplay() {
   const debugLogRef = useRef<HTMLDivElement>(null);
   const client = useRTVIClient();
+  const [isDebugOpen, setIsDebugOpen] = useState(false);
 
   const log = useCallback((message: string) => {
     if (!debugLogRef.current) return;
@@ -135,15 +137,21 @@ export function DebugDisplay() {
     )
   );
 
+  const toggleDebug = () => {
+    setIsDebugOpen(!isDebugOpen);
+  };
+
   return (
     <div className="debug-panel">
       <div className="debug-title">
         <h3>
-          <i className="fas fa-chevron-right" />
+          <button className="toggle-button" onClick={toggleDebug}>
+            <i className={`fas fa-chevron-${isDebugOpen ? 'down' : 'right'}`} />
+          </button>
           <span>Debug Info</span>
         </h3>
       </div>
-      <div ref={debugLogRef} className="debug-log" />
+      <div ref={debugLogRef} className="debug-log" hidden={!isDebugOpen} />
     </div>
   );
 }

@@ -13,6 +13,12 @@
   }
 }
 
+.toggle-button {
+  border: none;
+  background: #f8f8f8;
+  cursor: pointer;
+}
+
 .debug-log {
   height: 200px;
   overflow-y: auto;
