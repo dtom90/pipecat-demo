@@ -15,12 +15,11 @@ from pipecat.services.deepgram.stt import DeepgramSTTService
 from pipecat.services.deepgram.tts import DeepgramTTSService
 from pipecat.transports.services.daily import DailyTransport, DailyParams
 from pipecat.frames.frames import TTSSpeakFrame
-from pipecat.services.google.llm import GoogleLLMService
-from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
 from pipecat.services.deepgram.stt import LiveOptions
 from pipecat.transcriptions.language import Language
 from pipecat.audio.vad.vad_analyzer import VADParams
 from pipecat.audio.vad.silero import SileroVADAnalyzer
+from rag_agent import RagAgentProcessor
 
 
 load_dotenv(override=True)
@@ -30,19 +29,24 @@ DAILY_ROOM_URL = os.getenv("DAILY_ROOM_URL")
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-CONVERSATION_MODEL = "gemini-2.0-flash"
-conversation_system_instruction = """
-You are a professional college advisor. You are an expert in college admissions. Your goal is to help students apply to colleges and universities.
-Your goals are to be helpful and brief in your responses.
-Respond with one or two sentences at most, unless you are asked to respond at more length. 
-Your output will be converted to audio so don't include special characters in your answers.
-"""
+LLM_MODEL_PROVIDER = "google_genai"
+LLM_MODEL = "gemini-2.0-flash"
 
-bot_name = "College Advisor Bot"
+EMBEDDINGS_MODEL = "text-embedding-004"
+WEBPAGE_DOCUMENTS = (
+    'https://outrival.com/',
+    'https://outrival.com/company',
+    'https://outrival.com/blog/ai-for-the-people'
+)
+
+TOPIC = '"Outrival", the AI Company'
+ADDITIONAL_CONTEXT = "Outrival is a company that specializes in AI and machine learning."
+
+bot_name = "Outrival Bot"
 greeting = f"Hello there! My name is {bot_name}. How can I help you today?"
 
 async def run_bot():
-    logger.info(f"Starting Daily.co bot")
+    logger.info(f"Starting {bot_name}")
 
     # Create a transport using the Daily connection
     vad_analyzer = SileroVADAnalyzer(params=VADParams())
@@ -74,15 +78,14 @@ async def run_bot():
         )
     )
 
-    conversation_llm = GoogleLLMService(
-        name=bot_name,
-        model=CONVERSATION_MODEL,
-        api_key=GEMINI_API_KEY,
-        system_instruction=conversation_system_instruction,
+    rag_agent = RagAgentProcessor(
+        topic=TOPIC,
+        llm_model=LLM_MODEL,
+        llm_model_provider=LLM_MODEL_PROVIDER,
+        embeddings_model=EMBEDDINGS_MODEL,
+        webpage_documents=WEBPAGE_DOCUMENTS,
+        name=bot_name
     )
-
-    context = OpenAILLMContext()
-    context_aggregator = conversation_llm.create_context_aggregator(context)
 
     # Initialize the text-to-speech service
     tts = DeepgramTTSService(
@@ -93,8 +96,7 @@ async def run_bot():
     pipeline = Pipeline([
         transport.input(),
         stt,
-        context_aggregator.user(),
-        conversation_llm,
+        rag_agent,
         tts,
         transport.output()
     ])
