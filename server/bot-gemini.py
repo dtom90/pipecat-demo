@@ -19,7 +19,6 @@ the conversation flow using Gemini's streaming capabilities.
 import asyncio
 import os
 import sys
-import json
 
 import aiohttp
 from dotenv import load_dotenv
@@ -148,38 +147,7 @@ async def main():
         # Set up conversation context and management
         # The context_aggregator will automatically collect conversation context
         context = OpenAILLMContext(messages)
-        logger.debug(f"Initial LLM context messages: {context.get_messages_for_logging()}")
         context_aggregator = llm.create_context_aggregator(context)
-
-        # Create a wrapper for the add_message method to add logging
-        original_add_message = context.add_message
-        def add_message_with_logging(message):
-            original_add_message(message)
-            logger.debug(f"New message added to LLM context: {json.dumps(message)}")
-            logger.debug(f"Updated LLM context messages: {context.get_messages_for_logging()}")
-        
-        # Replace the original method with our logging wrapper
-        context.add_message = add_message_with_logging
-
-        # Create a wrapper for the add_messages method to add logging
-        original_add_messages = context.add_messages
-        def add_messages_with_logging(messages):
-            original_add_messages(messages)
-            logger.debug(f"New messages added to LLM context: {json.dumps(messages)}")
-            logger.debug(f"Updated LLM context messages: {context.get_messages_for_logging()}")
-        
-        # Replace the original method with our logging wrapper
-        context.add_messages = add_messages_with_logging
-
-        # Create a wrapper for the set_messages method to add logging
-        original_set_messages = context.set_messages
-        def set_messages_with_logging(messages):
-            original_set_messages(messages)
-            logger.debug(f"LLM context messages reset: {json.dumps(messages)}")
-            logger.debug(f"Updated LLM context messages: {context.get_messages_for_logging()}")
-        
-        # Replace the original method with our logging wrapper
-        context.set_messages = set_messages_with_logging
 
         ta = TalkingAnimation()
 

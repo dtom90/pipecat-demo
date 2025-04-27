@@ -52,17 +52,33 @@ button:disabled {
 
 .bot-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.video-container, .bot-text-container {
+  height: 360px;
+  border-radius: 8px;
 }
 
 .video-container {
-  width: 640px;
   height: 360px;
+  width: 640px;
+  min-width: 640px;
   background-color: #ddd;
-  margin-bottom: 20px;
-  border-radius: 8px;
   overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.bot-text-container {
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+  min-width: 200px;
+  max-height: 360px;
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
 }
 
 .video-container video {

@@ -7,6 +7,7 @@ import { RTVIProvider } from './providers/RTVIProvider';
 import { ConnectButton } from './components/ConnectButton';
 import { StatusDisplay } from './components/StatusDisplay';
 import { DebugDisplay } from './components/DebugDisplay';
+import { BotText } from './components/BotText';
 import './App.css';
 
 function BotVideo() {
@@ -14,10 +15,8 @@ function BotVideo() {
   const isConnected = transportState !== 'disconnected';
 
   return (
-    <div className="bot-container">
-      <div className="video-container">
-        {isConnected && <RTVIClientVideo participant="bot" fit="cover" />}
-      </div>
+    <div className="video-container">
+      {isConnected && <RTVIClientVideo participant="bot" fit="cover" />}
     </div>
   );
 }
@@ -31,7 +30,12 @@ function AppContent() {
       </div>
 
       <div className="main-content">
-        <BotVideo />
+        <div className="bot-container">
+          <BotVideo />
+          <div className="bot-text-container">
+            <BotText />
+          </div>
+        </div>
       </div>
 
       <DebugDisplay />
