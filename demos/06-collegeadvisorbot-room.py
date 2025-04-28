@@ -28,27 +28,29 @@ load_dotenv(override=True)
 DAILY_API_KEY = os.getenv("DAILY_API_KEY")
 DAILY_ROOM_URL = os.getenv("DAILY_ROOM_URL")
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 CONVERSATION_MODEL = "gemini-2.0-flash"
-conversation_system_instruction = """
+CONVERSATION_SYSTEM_INSTRUCTION = """
 You are a professional college advisor. You are an expert in college admissions. Your goal is to help students apply to colleges and universities.
 Your goals are to be helpful and brief in your responses.
 Respond with one or two sentences at most, unless you are asked to respond at more length. 
 Your output will be converted to audio so don't include special characters in your answers.
 """
 
-bot_name = "College Advisor Bot"
-greeting = f"Hello there! My name is {bot_name}. How can I help you today?"
+BOT_NAME = "College Advisor Bot"
+GREETING = f"Hello there! My name is {BOT_NAME}. How can I help you today?"
+
+STOP_SECONDS = 1
 
 async def run_bot():
     logger.info(f"Starting Daily.co bot")
 
     # Create a transport using the Daily connection
-    vad_analyzer = SileroVADAnalyzer(params=VADParams())
     transport = DailyTransport(
         room_url=DAILY_ROOM_URL,
-        bot_name=bot_name,
+        bot_name=BOT_NAME,
         token=None,
         params=DailyParams( 
             api_key=DAILY_API_KEY,
@@ -56,7 +58,7 @@ async def run_bot():
             audio_in_enabled=True,
             vad_enabled=True,
             vad_audio_passthrough=True,
-            vad_analyzer=vad_analyzer,
+            vad_analyzer=SileroVADAnalyzer(params=VADParams(stop_secs=STOP_SECONDS)),
         ),
     )
 
@@ -75,10 +77,10 @@ async def run_bot():
     )
 
     conversation_llm = GoogleLLMService(
-        name=bot_name,
+        name=BOT_NAME,
         model=CONVERSATION_MODEL,
         api_key=GEMINI_API_KEY,
-        system_instruction=conversation_system_instruction,
+        system_instruction=CONVERSATION_SYSTEM_INSTRUCTION,
     )
 
     context = OpenAILLMContext()
@@ -108,7 +110,7 @@ async def run_bot():
 
         # Queue the welcome message and end frame
         await task.queue_frames([
-            TTSSpeakFrame(f"{greeting}"),
+            TTSSpeakFrame(f"{GREETING}"),
             # No EndFrame here to keep the pipeline running
         ])
 

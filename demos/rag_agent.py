@@ -33,7 +33,6 @@ class RagAgentProcessor(FrameProcessor):
         self.topic = topic
         self.system_prompt = """You are an expert in the topic of {topic} and you are here to answer any questions you have regarding the topic.
 Use the following pieces of retrieved context, which provide information about {topic}, to answer the questions.
-If you don't know the answer, just say that you don't know.
 Use three sentences maximum and keep the answer concise.
 Context: {additional_context}
 {context}:"""
@@ -93,10 +92,12 @@ Context: {additional_context}
     
     def _setup_agent(self):
         """Set up the agent executor."""
+        prompt = self.system_prompt.format(topic=self.topic, context="{context}", additional_context=self.additional_context)
+        logger.info(f"Setting up agent executor with prompt: {prompt}")
         self.agent_executor = create_react_agent(
             model=self.llm, 
             tools=[self.generate_retrieve_tool()], 
-            prompt=self.system_prompt.format(topic=self.topic, context="{context}", additional_context=self.additional_context),
+            prompt=prompt,
             checkpointer=self.memory
         )
 

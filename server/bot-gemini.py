@@ -68,6 +68,7 @@ sprites.extend(flipped)
 quiet_frame = sprites[0]  # Static frame for when bot is listening
 talking_frame = SpriteFrame(images=sprites)  # Animation sequence for when bot is talking
 
+STOP_SECONDS = 1
 
 class TalkingAnimation(FrameProcessor):
     """Manages the bot's visual animation states.
@@ -126,7 +127,7 @@ async def main():
                 video_out_enabled=True,
                 video_out_width=1024,
                 video_out_height=576,
-                vad_analyzer=SileroVADAnalyzer(params=VADParams(stop_secs=0.5)),
+                vad_analyzer=SileroVADAnalyzer(params=VADParams(stop_secs=STOP_SECONDS)),
             ),
         )
 

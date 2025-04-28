@@ -11,9 +11,10 @@ from loguru import logger
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineTask
-from pipecat.services.deepgram.stt import DeepgramSTTService
-from pipecat.services.deepgram.tts import DeepgramTTSService
 from pipecat.transports.services.daily import DailyTransport, DailyParams
+from pipecat.services.deepgram.stt import DeepgramSTTService
+# from pipecat.services.deepgram.tts import DeepgramTTSService
+from pipecat.services.elevenlabs.tts import ElevenLabsTTSService
 from pipecat.frames.frames import TTSSpeakFrame
 from pipecat.services.deepgram.stt import LiveOptions
 from pipecat.transcriptions.language import Language
@@ -27,7 +28,10 @@ load_dotenv(override=True)
 DAILY_API_KEY = os.getenv("DAILY_API_KEY")
 DAILY_ROOM_URL = os.getenv("DAILY_ROOM_URL")
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+ELEVENLABS_VOICE_ID = "onwK4e9ZLuTAKqWW03F9"
 
 LLM_MODEL_PROVIDER = "google_genai"
 LLM_MODEL = "gemini-2.0-flash"
@@ -84,12 +88,17 @@ async def run_bot():
         llm_model_provider=LLM_MODEL_PROVIDER,
         embeddings_model=EMBEDDINGS_MODEL,
         webpage_documents=WEBPAGE_DOCUMENTS,
-        name=bot_name
+        name=bot_name,
+        additional_context=ADDITIONAL_CONTEXT
     )
 
     # Initialize the text-to-speech service
-    tts = DeepgramTTSService(
-        api_key=DEEPGRAM_API_KEY
+    # tts = DeepgramTTSService(
+    #     api_key=DEEPGRAM_API_KEY
+    # )
+    tts = ElevenLabsTTSService(
+        api_key=ELEVENLABS_API_KEY,
+        voice_id=ELEVENLABS_VOICE_ID
     )
 
     # Create a pipeline with the correct sequence of processors
