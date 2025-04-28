@@ -32,9 +32,7 @@ function AppContent() {
       <div className="main-content">
         <div className="bot-container">
           <BotVideo />
-          <div className="bot-text-container">
-            <BotText />
-          </div>
+          <BotText />
         </div>
       </div>
 
